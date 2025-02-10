@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Информационная панель ученика</title>
+  <!-- Include Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Include Chart.js Data Labels Plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+  <style>
+    /* Basic Reset & Styling */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      background: linear-gradient(to right, #83a4d4, #b6fbff);
+      color: #333;
+      overflow-x: hidden;
+    }
+    .dashboard {
+      max-width: 1100px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 20px 40px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      animation: fadeIn 1s ease-out;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #eee;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #2c3e50;
+      animation: slideInLeft 1s ease-out;
+    }
+    /* Reduced the profile image size by 20% (from 150px to 120px) */
+    .header img {
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border: 3px solid #3498db;
+      transition: transform 0.3s ease;
+      animation: zoomIn 1s ease-out;
+    }
+    .header img:hover {
+      transform: scale(1.05);
+    }
+    .section {
+      margin-bottom: 40px;
+      animation: fadeInUp 0.8s ease forwards;
+      opacity: 0;
+    }
+    /* Delay each section's animation for a staggered effect */
+    .section:nth-of-type(1) { animation-delay: 0.2s; }
+    .section:nth-of-type(2) { animation-delay: 0.4s; }
+    .section:nth-of-type(3) { animation-delay: 0.6s; }
+    .section:nth-of-type(4) { animation-delay: 0.8s; }
+    .section:nth-of-type(5) { animation-delay: 1s; }
+    .section h2 {
+      margin-bottom: 15px;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 5px;
+      font-size: 22px;
+      color: #3498db;
+    }
+    .info {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+    }
+    .info div {
+      background: #f9f9f9;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .info div:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .chart-container {
+      position: relative;
+      height: 350px;
+      width: 100%;
+      max-width: 650px;
+      margin: auto;
+    }
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-50px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes zoomIn {
+      from { opacity: 0; transform: scale(0.5); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .dashboard {
+        margin: 10px;
+        padding: 15px 20px;
+      }
+      .header {
+        flex-direction: column;
+        text-align: center;
+      }
+      /* 20% reduction applied: 120px * 0.8 = 96px */
+      .header img {
+        width: 96px;
+        height: 96px;
+        margin-bottom: 10px;
+      }
+      .section h2 {
+        font-size: 20px;
+      }
+      .chart-container {
+        height: 300px;
+      }
+    }
+    @media (max-width: 480px) {
+      .dashboard {
+        padding: 10px 15px;
+      }
+      .header h1 {
+        font-size: 24px;
+      }
+      /* Further reduce for mobile: 96px * 0.8 ≈ 80px */
+      .header img {
+        width: 80px;
+        height: 80px;
+      }
+      .info {
+        grid-template-columns: 1fr;
+      }
+      .chart-container {
+        height: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <!-- Header with Title & Profile Picture -->
+    <div class="header">
+      <h1>Информационная панель ученика</h1>
+      <img src="child_picture.jpg" alt="Фотография ученика">
+    </div>
+    
+    <!-- Personal Details Section -->
+    <div class="section" id="personal-details">
+      <h2>Личные данные</h2>
+      <div class="info">
+        <div><strong>Полное имя:</strong> Elena Smirnova</div>
+        <div><strong>Дата рождения:</strong> 1 января 2010 года</div>
+        <div><strong>Пол:</strong> Женский</div>
+        <div><strong>Класс:</strong> 5А</div>
+        <div><strong>Название школы:</strong> Средняя школа №1</div>
+        <div><strong>Имя родителя:</strong> Мария Иванова</div>
+        <div><strong>Контактный телефон:</strong> (555) 123-4567</div>
+      </div>
+    </div>
+    
+    <!-- Medical Information Section -->
+    <div class="section" id="medical-information">
+      <h2>Медицинская информация</h2>
+      <div class="info">
+        <div><strong>Вакцинации:</strong> MMR, Полио, DTP</div>
+        <div><strong>Группа крови:</strong> O+</div>
+      </div>
+    </div>
+    
+    <!-- Sport and Activity Section -->
+    <div class="section" id="sport-activity">
+      <h2>Спорт и деятельность</h2>
+      <div class="info">
+        <div><strong>Деятельность:</strong> Художественный кружок</div>
+        <div><strong>Вид спорта:</strong> Теннис</div>
+      </div>
+    </div>
+    
+    <!-- Grades Section with Dynamic Graph -->
+    <div class="section" id="grades">
+      <h2>Оценки</h2>
+      <div class="chart-container">
+        <canvas id="gradesChart"></canvas>
+      </div>
+    </div>
+    
+    <!-- Attendance Section with Graph -->
+    <div class="section" id="attendance">
+      <h2>Посещаемость</h2>
+      <div class="chart-container">
+        <canvas id="attendanceChart"></canvas>
+      </div>
+    </div>
+    
+  </div>
+  
+  <!-- JavaScript to Render Charts -->
+  <script>
+    // Register the Data Labels plugin
+    Chart.register(ChartDataLabels);
+    
+    // Grades Chart (Bar Chart) with "%" appended and labels located inside the bars
+    const gradesCtx = document.getElementById('gradesChart').getContext('2d');
+    const gradesChart = new Chart(gradesCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Математика', 'Английский', 'Наука', 'История', 'Искусство'],
+        datasets: [{
+          label: 'Оценки (%)',
+          data: [85, 90, 78, 88, 92],
+          backgroundColor: [
+            'rgba(46, 204, 113, 0.7)',
+            'rgba(52, 152, 219, 0.7)',
+            'rgba(155, 89, 182, 0.7)',
+            'rgba(241, 196, 15, 0.7)',
+            'rgba(231, 76, 60, 0.7)'
+          ],
+          borderColor: [
+            'rgba(46, 204, 113, 1)',
+            'rgba(52, 152, 219, 1)',
+            'rgba(155, 89, 182, 1)',
+            'rgba(241, 196, 15, 1)',
+            'rgba(231, 76, 60, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: { 
+            beginAtZero: true, 
+            max: 100,
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          }
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          datalabels: {
+            display: true,
+            anchor: 'center',
+            align: 'center',
+            formatter: (value, context) => {
+              return value + '%';
+            },
+            font: {
+              weight: 'bold',
+              size: 14
+            },
+            color: '#fff'
+          }
+        }
+      }
+    });
+    
+    // Attendance Chart (Pie Chart) with additional category "Несвоевременный уход"
+    const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+    const attendanceChart = new Chart(attendanceCtx, {
+      type: 'pie',
+      data: {
+        labels: [
+          'Приход вовремя',
+          'Приход с опозданием',
+          'Уход вовремя',
+          'Уход с опозданием',
+          'Несвоевременный уход'
+        ],
+        datasets: [{
+          label: 'Посещаемость',
+          data: [80, 5, 85, 10, 7],
+          backgroundColor: [
+            'rgba(46, 204, 113, 0.7)',  // Приход вовремя - green
+            'rgba(231, 76, 60, 0.7)',   // Приход с опозданием - red
+            'rgba(52, 152, 219, 0.7)',   // Уход вовремя - blue
+            'rgba(241, 196, 15, 0.7)',   // Уход с опозданием - yellow
+            'rgba(155, 89, 182, 0.7)'    // Несвоевременный уход - purple
+          ],
+          borderColor: [
+            'rgba(46, 204, 113, 1)',
+            'rgba(231, 76, 60, 1)',
+            'rgba(52, 152, 219, 1)',
+            'rgba(241, 196, 15, 1)',
+            'rgba(155, 89, 182, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        plugins: {
+          datalabels: {
+            display: true,
+            color: '#fff',
+            align: 'center',
+            anchor: 'center',
+            font: {
+              weight: 'bold',
+              size: 14
+            },
+            formatter: (value, context) => {
+              return value;
+            }
+          },
+          tooltip: { enabled: false }
+        },
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
+  </script>
+</body>
+</html>
